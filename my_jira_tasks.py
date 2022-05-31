@@ -77,11 +77,10 @@ def generate_days_count_tag(issue: Issue) -> str:
     ).days
 
     days_ago = f"{days_ago_int} days ago"
-    match days_ago_int:
-        case 0:
-            days_ago = "Today"
-        case 1:
-            days_ago = "Yesterday"
+    if days_ago_int == 0:
+        days_ago = "Today"
+    elif days_ago_int == 1:
+        days_ago = "Yesterday"
 
     return days_ago
 
