@@ -19,6 +19,7 @@
 * [Getting Started](#getting-started)
     * [Prerequisites](#prerequisites)
     * [Installation and Usage](#installation-and-usage)
+* [Collaboration](#collaboration)
 * [Contact](#contact)
 
 
