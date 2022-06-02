@@ -26,7 +26,14 @@ class Colors:
 NOW = datetime.now().replace(tzinfo=tzlocal())
 
 
-def sort_issues(issues: list, categories: list):
+def sort_issues(issues: list[Issue], categories: list) -> list[dict[str, list]]:
+    """
+    Sort provided issues by provided categories
+    :param issues: list with JIRA Issues (Issue obj.)
+    :param categories: list with category names (str)
+    :return: list with categories and their issues::
+        [{"category: [Issue1, Issue2, Issue3, ...]}, {...}, ...]
+    """
     result = [
         {
             "name": category,
@@ -73,7 +80,7 @@ def generate_days_count_tag(issue: Issue) -> str:
     return days_ago
 
 
-def print_category_summary(issues: list, name: str) -> None:
+def print_category_summary(issues: list[Issue], name: str) -> None:
     """
     Print summary of each issue category
     :param issues: list of issues in a given category
@@ -92,7 +99,12 @@ def print_category_summary(issues: list, name: str) -> None:
             )
 
 
-def initialize():
+def initialize() -> tuple[str, str, str, list]:
+    """
+    Initialize the script environment
+    Asks for data in the terminal and saves them in the .env file
+    :return: user (str), token (str), server (str), categories (list)
+    """
     try:
         confirm_initialize = input("Would you like to initialize the script and set a new configuration now? [y/N] ")
         if confirm_initialize.lower() in ("y", "yes"):
