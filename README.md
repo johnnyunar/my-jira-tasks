@@ -27,7 +27,24 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Simple Python script that prints open personal JIRA tasks.
+Simple Python script that prints open personal JIRA tasks in the terminal.
+
+```shell
+$ jira
+You have 4 unresolved JIRA issues
+
+To Do:
+⦿ Awesome task that has a To Do status https://yourawesomedomain.atlassian.net/browse/ISSUE-01 (Created 42 days ago)
+
+In Progress:
+⦿ Awesome task that I am working on https://yourawesomedomain.atlassian.net/browse/ISSUE-18 (Created 8 days ago)
+⦿ Awesome task that I am working on https://yourawesomedomain.atlassian.net/browse/ISSUE-14 (Created 22 days ago)
+
+Other:
+⦾ Awesome task that is on hold https://yourawesomedomain.atlassian.net/browse/ISSUE-425 (Created Today)
+⦿ Another awesome task that did not fit in any category https://yourawesomedomain.atlassian.net/browse/ISSUE-422 (Created Yesterday)
+⦿ Yet Another awesome task that did not fit in any category https://yourawesomedomain.atlassian.net/browse/ISSUE-420 (Created Yesterday)
+```
 
 ### Built With
 * [Python](https://www.python.org/)
@@ -44,7 +61,6 @@ so I recommend using [miniconda](https://docs.conda.io/projects/conda/en/latest/
 
 #### JIRA API Token
 For the authentication to work, you need to obtain a token from JIRA, see: [https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
-
 
 ### Installation and Usage
 1. Clone the repo
@@ -65,6 +81,8 @@ Some of the configuration is missing.
 Would you like to initialize the script and set a new configuration now? [y/N]
 ```
 Then provide the configuration data you are asked for.
+
+**WARNING: DO NOT share the generated *.env* file with anyone. It contains your JIRA credentials.**
 
 5. (Optional) In your .zshrc (or equivalent file) set an alias for comfortable usage:
 ```shell script
