@@ -65,6 +65,7 @@ Some of the configuration is missing.
 Would you like to initialize the script and set a new configuration now? [y/N]
 ```
 Then provide the configuration data you are asked for.
+
 5. (Optional) In your .zshrc (or equivalent file) set an alias for comfortable usage:
 ```shell script
 alias jira="~/scripts/jira/my_jira_tasks.py"
