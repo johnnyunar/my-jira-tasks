@@ -55,15 +55,17 @@ git clone https://github.com/johnunar/my-jira-tasks.git
 ```shell script
 conda create --name jira --file requirements.txt python=3.9
 ```
-3. Create a new *.env* file inside the project directory and fill it with important data (see *.env-sample*):
-```shell script
-touch .env
-```
-5. Run the script:
+3. Run the script:
 ```shell script
 ./my-jira-tasks.py
 ```
-6. (Optional) In your .zshrc (or equivalent file) set an alias for comfortable usage:
+4. If this is the first time running the script, you will be prompted with initialization request:
+```shell script
+Some of the configuration is missing.
+Would you like to initialize the script and set a new configuration now? [y/N]
+```
+Then provide the configuration data you are asked for.
+5. (Optional) In your .zshrc (or equivalent file) set an alias for comfortable usage:
 ```shell script
 alias jira="~/scripts/jira/my_jira_tasks.py"
 ```

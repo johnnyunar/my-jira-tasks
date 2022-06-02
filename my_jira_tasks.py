@@ -1,6 +1,7 @@
-#!/usr/bin/env conda run -n jira python
+#!/usr/bin/env conda run -n jira --no-capture-output python
 import json
 import os
+import sys
 from datetime import datetime
 
 from dateutil.tz import tzlocal
@@ -21,19 +22,6 @@ class Colors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
-
-# "user@domain.xyz"
-USER = os.getenv("USERNAME")
-
-# See: https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/
-TOKEN = os.getenv("TOKEN")
-
-# "https://subdomain.atlassian.net"
-SERVER = os.getenv("SERVER")
-
-# Use issue statuses you want to display, 'Other' stands for everything else:
-# "['To Do', 'In Progress', 'Other']"
-CATEGORIES = json.loads(os.getenv("CATEGORIES").replace("'", '"'))
 
 NOW = datetime.now().replace(tzinfo=tzlocal())
 
@@ -104,18 +92,77 @@ def print_category_summary(issues: list, name: str) -> None:
             )
 
 
-if __name__ == "__main__":
-    jira = JIRA(basic_auth=(USER, TOKEN), server=SERVER)
+def initialize():
+    try:
+        confirm_initialize = input("Would you like to initialize the script and set a new configuration now? [y/N] ")
+        if confirm_initialize.lower() in ("y", "yes"):
+            user = input("Username: ")
+            token = input("Token: ")
+            server = input("JIRA Server: ")
+            categories = input(
+                "Statuses you want to display [To Do, In Progress, On Hold, Other]: "
+            ).replace(", ", ",").replace("[", "").replace("]", "").split(",")
 
-    my_unresolved_issues = jira.search_issues(
-        "assignee = currentUser() AND resolution = Unresolved"
+            if not categories:
+                categories = ["To Do", "In Progress", "On Hold", "Other"]
+
+            current_dir = os.path.abspath(os.path.dirname(__file__))
+
+            with open(os.path.join(current_dir, ".env"), "w+") as env_file:
+                env_file.write(
+                    f"USERNAME='{user}'\n"
+                    f"TOKEN='{token}'\n"
+                    f"SERVER='{server}'\n"
+                    f"CATEGORIES=\"{categories}\"\n"
+                )
+            return user, token, server, categories
+        else:
+            exit(0)
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+
+def get_env_variables():
+    # "user@domain.xyz"
+    user = os.getenv("USERNAME")
+    # See: https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/
+    token = os.getenv("TOKEN")
+    # "https://subdomain.atlassian.net"
+    server = os.getenv("SERVER")
+    # Use issue statuses you want to display, 'Other' stands for everything else:
+    # "['To Do', 'In Progress', 'Other']"
+    categories = (
+        json.loads(os.getenv("CATEGORIES").replace("'", '"'))
+        if os.getenv("CATEGORIES")
+        else None
     )
-    if my_unresolved_issues:
-        print(
-            f"You have {Colors.WARNING}{len(my_unresolved_issues)}{Colors.ENDC} unresolved JIRA issues."
-        )
 
-        for category in sort_issues(my_unresolved_issues, CATEGORIES):
-            print_category_summary(category["issues"], category["name"])
-    else:
-        print("You have no unresolved JIRA issues. Good job!")
+    if not all((user, token, server, categories)):
+        print("Some of the configuration is missing.")
+        user, token, server, categories = initialize()
+
+    return user, token, server, categories
+
+
+if __name__ == "__main__":
+    if "init" in sys.argv:
+        initialize()
+        exit(0)
+    try:
+        user, token, server, categories = get_env_variables()
+        jira = JIRA(basic_auth=(user, token), server=server)
+
+        my_unresolved_issues = jira.search_issues(
+            "assignee = currentUser() AND resolution = Unresolved"
+        )
+        if my_unresolved_issues:
+            print(
+                f"You have {Colors.WARNING}{len(my_unresolved_issues)}{Colors.ENDC} unresolved JIRA issues."
+            )
+
+            for category in sort_issues(my_unresolved_issues, categories):
+                print_category_summary(category["issues"], category["name"])
+        else:
+            print("You have no unresolved JIRA issues. Good job!")
+    except Exception as e:
+        print("There was an error with your request: ", repr(e))
